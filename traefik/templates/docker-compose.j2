@@ -1,0 +1,22 @@
+services:
+  traefik:
+    image: traefik:v3
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Дашборд (для теста)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      #- /traefik:/etc/traefik/
+      #- ./acme:/etc/traefik/acme
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+#    command:
+#      - --configfile=/etc/traefik/config
+    networks:
+      - traefik-net
+
+networks:
+  traefik-net:
+    driver: bridge

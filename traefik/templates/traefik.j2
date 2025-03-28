@@ -1,0 +1,25 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+providers:
+  file:
+    directory: /etc/traefik/
+    watch: true
+
+api:
+  dashboard: true
+  insecure: true  # Для теста (позже замените на HTTPS)
+
+
+
+log:
+  level: INFO
+
+accessLog: {}

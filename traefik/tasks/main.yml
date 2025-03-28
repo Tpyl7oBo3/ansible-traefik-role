@@ -1,0 +1,51 @@
+---
+- name: install dependes
+  ansible.builtin.apt:
+    name: "{{dependes_packages}}"
+    state: present
+    update_cache: yes
+  
+- name: gpg key add
+  shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc"
+  
+- name: add docker repo
+  apt_repository:
+    repo: "{{docker_repo}}"
+    state: present
+    filename: docker
+    update_cache: true
+- name: install docker
+  ansible.builtin.apt:
+    name: "{{docker_packages}}"
+    state: present
+    update_cache: yes
+  
+
+- name: adding ubuntu to docker group
+  user:
+    name: "{{ansible_user}}"
+    groups: docker
+    append: yes
+
+- name: create dir for traefik
+  ansible.builtin.file:
+    path: /etc/traefik
+    state: directory
+
+
+- name: copy traefik config
+  ansible.builtin.template:
+    src: traefik.j2
+    dest: /etc/traefik/traefik.yml
+- name: copy dynamic config
+  ansible.builtin.template:
+    src: dynamic.j2
+    dest: /etc/traefik/dynamic.yml
+- name: copy composer file
+  ansible.builtin.template:
+    src: docker-compose.j2
+    dest: /etc/traefik/docker-compose.yml
+  
+    
+- name: start docker-compose
+  shell: "docker compose -f /etc/traefik/docker-compose.yml up -d"
